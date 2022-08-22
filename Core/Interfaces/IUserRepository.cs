@@ -4,5 +4,7 @@ namespace Core.Interfaces;
 public interface IUserRepository : IGenericRepository<User> 
 {
     Task<User> GetByUserNameAsync(string userName);
+    Task<User> GetByRefreshTokenAsync(string refreshToken);
+
 }
 
