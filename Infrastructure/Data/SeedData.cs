@@ -79,5 +79,29 @@ namespace Infrastructure.Data
                 logger.LogError(ex.Message);
             }
         }
+
+        public static async Task SeedRolesAsync(MyLittleStoreContext context, ILoggerFactory loggerFactory)
+        {
+            try
+            {
+                if (!context.Roles.Any())
+                {
+                    var roles = new List<Role>()
+                        {
+                            new Role{Id=1, Name="Administrator"},
+                            new Role{Id=2, Name="Manager"},
+                            new Role{Id=3, Name="Employee"},
+                        };
+                    context.Roles.AddRange(roles);
+                    await context.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                var logger = loggerFactory.CreateLogger<MyLittleStoreContext>();
+                logger.LogError(ex.Message);
+            }
+        }
+
     }
 }

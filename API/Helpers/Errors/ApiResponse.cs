@@ -15,9 +15,11 @@ public class ApiResponse
         {
             400 => "Incorrect request.",
             401 => "User not authorized",
+            403 => "Forbidden. User not authorized",
             404 => "The resource does not exists",
             405 => "HTTP method is not allowed",
-            500 => "Error in the server. Contact your administrator"
+            500 => "Error in the server. Contact your administrator",
+            _ => "Incorrect request."
         };
     }
 }

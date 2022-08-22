@@ -4,12 +4,14 @@ using API.Helpers.Errors;
 using AutoMapper;
 using Core.Entities;
 using Core.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace API.Controllers;
 [ApiVersion("1.0")]
 [ApiVersion("1.1")]
+[Authorize(Roles="Administrator")]
 
 public class ProductsController : BaseApiController
 {
@@ -21,6 +23,7 @@ public class ProductsController : BaseApiController
         _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
+
 
     //[HttpGet]
     //[SwaggerOperation(Summary = "Get products", Description = "Get all products")]

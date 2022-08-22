@@ -24,6 +24,7 @@ builder.Services.ConfigureRateLimiting();
 builder.Services.ConfigureCors();
 builder.Services.AddAplicacionServices();
 builder.Services.ConfigureApiVersioning();
+builder.Services.AddJwt(builder.Configuration);
 
 builder.Services.AddControllers(options =>
 {
@@ -67,6 +68,7 @@ using (var scope = app.Services.CreateScope())
 		var context = services.GetRequiredService<MyLittleStoreContext>();
 		await context.Database.MigrateAsync();
 		await SeedData.SeedAsync(context, loggerFactory);
+		await SeedData.SeedRolesAsync(context, loggerFactory);
 	}
 	catch (Exception ex)
 	{
@@ -79,6 +81,7 @@ app.UseCors("CorsPolicy");
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

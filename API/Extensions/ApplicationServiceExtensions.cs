@@ -1,10 +1,17 @@
-﻿using API.Helpers.Errors;
+﻿using API.Helpers;
+using API.Helpers.Errors;
+using API.Services;
 using AspNetCoreRateLimit;
+using Core.Entities;
 using Core.Interfaces;
 using Infrastructure.Repositories;
 using Infrastructure.UnitOfWork;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace API.Extensions;
 public static class ApplicationServiceExtensions
@@ -24,6 +31,8 @@ public static class ApplicationServiceExtensions
         //services.AddScoped<IProductRepository, ProductRepository>();
         //services.AddScoped<IBrandRepository, BrandRepository>();
         //services.AddScoped<ICategoryRepository, CategoryRepository>();
+        services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+        services.AddScoped<IUserService, UserService>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
     }
 
@@ -87,4 +96,35 @@ public static class ApplicationServiceExtensions
             };
         });
     }
+
+    public static void AddJwt(this IServiceCollection services, IConfiguration configuration)
+    {
+        //Configuration from AppSettings
+        services.Configure<JWT>(configuration.GetSection("JWT"));
+
+        //Adding Athentication - JWT
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+            .AddJwtBearer(o =>
+            {
+                o.RequireHttpsMetadata = false;
+                o.SaveToken = false;
+                o.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero,
+                    ValidIssuer = configuration["JWT:Issuer"],
+                    ValidAudience = configuration["JWT:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Key"]))
+                };
+            });
+    }
+
 }
+
