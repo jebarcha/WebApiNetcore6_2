@@ -36,8 +36,11 @@ builder.Services.AddValidationErrors(); //This is to have a consistent way of se
 
 builder.Services.AddDbContext<MyLittleStoreContext>(options =>
 {
-    var serverVersion = new MySqlServerVersion(new Version(8, 0, 28));
-    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"), serverVersion);
+	var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+	options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+
+	//var serverVersion = new MySqlServerVersion(new Version(8, 0, 28));
+	//options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"), serverVersion);
 });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
